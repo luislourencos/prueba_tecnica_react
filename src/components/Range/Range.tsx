@@ -76,10 +76,10 @@ export const Range = ({
     return parseInt(position.toFixed(0));
   };
   const calculateValueDot1 = (percent: number) => {
-    return (((max - min) * percent) / 100 + min - 2).toFixed(0);
+    return (((max - min) * percent) / 100 + min).toFixed(0);
   };
   const calculateValueDot2 = (percent: number) => {
-    return (((max - min) * (100 - percent)) / 100 + min - 2).toFixed(0);
+    return (((max - min) * (100 - percent)) / 100 + min).toFixed(0);
   };
   const convertPerc = (value: number) => {
     const _value = (value * 100) / containerWidth;
