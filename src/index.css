@@ -1,0 +1,36 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.primary-color {
+    color: #55ACEE
+}
+
+.secondary-color {
+    color: #292F33
+}
+
+.tertary-color {
+    color: #66757F
+}
+
+.main-color {
+    color: #FFFFFF
+}
+
+.primary-background {
+    background: #55ACEE
+}
+
+.secondary-background {
+    background: #292F33
+}
+
+.tertary-background {
+    background: #66757F
+}
+
+.main-background {
+    background: #FFFFFF
+}

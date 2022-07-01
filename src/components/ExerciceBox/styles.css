@@ -1,0 +1,15 @@
+.exercice-box {
+    cursor: pointer;
+    box-shadow: -2px 7px 17px -6px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 4rem;
+    border-radius: 0.5rem;
+    transition-duration: 300ms;
+    margin: 2rem 0rem;
+}
+
+.exercice-box:hover {
+    transform: scale(1.2)
+}

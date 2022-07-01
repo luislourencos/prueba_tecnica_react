@@ -1,0 +1,26 @@
+.header {
+    width: 100vw;
+    box-shadow: -2px 7px 17px -6px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-title {
+    margin: 0;
+    padding: 2rem 0rem
+}
+
+.header-back-button {
+    position: absolute;
+    left: 1rem;
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    padding: 1rem;
+    transition-duration: 200ms;
+}
+
+.header-back-button:hover {
+    transform: scale(1.2)
+}

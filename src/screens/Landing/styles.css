@@ -1,0 +1,12 @@
+.landing {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 4rem;
+}
+
+@media only screen and (max-width: 600px) {
+    .landing {
+        flex-direction: column;
+        padding: 2rem
+    }
+}

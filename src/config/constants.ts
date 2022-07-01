@@ -1,0 +1,1 @@
+export const URL = 'http://demo9172987.mockable.io/range'

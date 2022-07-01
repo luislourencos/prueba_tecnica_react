@@ -1,0 +1,1 @@
+export {Exercice2} from './Exercice2'

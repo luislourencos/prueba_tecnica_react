@@ -1,0 +1,55 @@
+.range {
+    display: flex;
+    padding: 2rem;
+    align-items: 'center';
+}
+
+.container {
+    width: 100%;
+    padding: 10;
+    height: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 30px;
+}
+
+.dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: red;
+    position: relative;
+    cursor: grab;
+    transition-duration: 200ms;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input {
+    width: 50px;
+    margin: 0px 20px;
+}
+
+.container:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.dot:active {
+    transform: scale(1.2);
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.dot:hover {
+    transform: scale(1.2);
+}
+
+.info-dot {
+    position: relative;
+    top: 2rem;
+}
