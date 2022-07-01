@@ -6,12 +6,10 @@
 
 .container {
     width: 100%;
-    padding: 10;
     height: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 30px;
 }
 
 .dot {
@@ -19,6 +17,7 @@
     height: 30px;
     border-radius: 50%;
     background-color: red;
+    opacity: 0.5;
     position: relative;
     cursor: grab;
     transition-duration: 200ms;

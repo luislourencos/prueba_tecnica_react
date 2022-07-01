@@ -33,7 +33,7 @@ export const Range = ({
   const [rightPosition, setRightPosition] = useState(0);
   const [activateDot1, setActivateDot1] = useState(false);
   const [activateDot2, setActivateDot2] = useState(false);
-
+  const compensationWidth = ((dotWidth / 2) * 100) / containerWidth;
   useLayoutEffect(() => {
     setContainerWidth(containerRef.current.offsetWidth);
     setContainerWidthLeft(containerRef.current.offsetLeft);
@@ -56,7 +56,7 @@ export const Range = ({
       rightWidth: dotRight.current.offsetWidth,
     });
     setDotWidth(dotLeft.current.offsetWidth);
-  }, []);
+  }, [containerRef, dotRight, dotLeft]);
 
   const findPositionRight = (value: number) => {
     console.log({
@@ -67,13 +67,21 @@ export const Range = ({
       sameValueContainer: value - containerWidthLeft + dotWidth,
       position: containerWidth - value - dotWidth + containerWidthLeft,
     });
-    let position = containerWidth - value - dotWidth + containerWidthLeft;
-    console.log('rightPosition', position);
-    return parseInt(position.toFixed(0));
+    let position = containerWidth - value + containerWidthLeft;
+
+    return parseInt(
+      positionToNotCross()
+        ? position.toFixed(0)
+        : (containerWidth / 2 - 1).toFixed(0)
+    );
   };
   const findPositionLeft = (value: number) => {
-    let position = value - dotWidth - containerWidthLeft;
-    return parseInt(position.toFixed(0));
+    let position = value - containerWidthLeft;
+    return parseInt(
+      positionToNotCross()
+        ? position.toFixed(0)
+        : (containerWidth / 2 - 1).toFixed(0)
+    );
   };
   const calculateValueDot1 = (percent: number) => {
     return (((max - min) * percent) / 100 + min).toFixed(0);
@@ -109,6 +117,32 @@ export const Range = ({
       onMouseUp={() => onMouseUp()}
       onMouseLeave={() => onMouseUp()}
     >
+      <div
+        style={{
+          left: containerWidthLeft,
+          width: containerWidth + containerWidthLeft - dotWidth * 2,
+          position: 'absolute',
+          display: 'flex',
+          justifyContent: 'space-between',
+          zIndex: -9999,
+        }}
+      >
+        {range &&
+          range.map(() => {
+            return (
+              <div
+                style={{
+                  height: '30px',
+
+                  borderLeft: '2px solid black',
+                  backgroundColor: 'pink',
+                  position: 'relative',
+                  bottom: 10,
+                }}
+              />
+            );
+          })}
+      </div>
       {range ? (
         <p>{min}</p>
       ) : (
@@ -123,20 +157,6 @@ export const Range = ({
         />
       )}
 
-      {/* <div
-        style={{
-          width: containerWidth - containerWidthLeft,
-
-          backgroundColor: 'green',
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        {range &&
-          range.map(() => {
-            return <p>O</p>;
-          })}
-      </div> */}
       <div
         className="container tertary-background"
         ref={containerRef}
@@ -144,7 +164,9 @@ export const Range = ({
       >
         <div
           className="dot"
-          style={{ left: `${convertPerc(leftPosition)}%` }}
+          style={{
+            left: `${convertPerc(leftPosition) - compensationWidth}%`,
+          }}
           ref={dotLeft}
           onMouseDown={(__) => onMouseDown('dot1')}
         >
@@ -154,7 +176,9 @@ export const Range = ({
         </div>
         <div
           className="dot primary-background"
-          style={{ right: `${convertPerc(rightPosition)}%` }}
+          style={{
+            right: `${convertPerc(rightPosition) - compensationWidth}%`,
+          }}
           ref={dotRight}
           onMouseDown={(__) => onMouseDown('dot2')}
         >
