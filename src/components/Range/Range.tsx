@@ -10,7 +10,6 @@ export const Range = ({
   onChangeMaxValue,
   range,
 }: IRange) => {
-  console.log(isMobile);
   const dotLeft = useRef<HTMLDivElement>(null);
   const dotRight = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
