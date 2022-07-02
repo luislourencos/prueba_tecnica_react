@@ -2,6 +2,10 @@ import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { Input } from '../Input';
 import './styles.css';
 import { isMobile } from 'react-device-detect';
+import { closestIndexArray } from './utils/closestIndexArray';
+import { convertRangeToRangePerc } from './utils/convertRangeToRangePerc';
+import { convertPositionToPerc } from './utils/convertPositionToPerc';
+import { convertPercToPosition } from './utils/convertPrecToPosition';
 
 export const Range = ({
   min = 1,
@@ -23,38 +27,11 @@ export const Range = ({
   const compensationWidth = ((dotWidth / 2) * 100) / containerWidth;
   const [rangePositionsPerc, setRangePositionPerc] = useState([] as number[]);
 
-  const closestIndex = (num: number, arr: number[]) => {
-    var curr = arr[0],
-      diff = Math.abs(num - curr),
-      index = 0;
-
-    for (var val = 0; val < arr.length; val++) {
-      let newdiff = Math.abs(num - arr[val]);
-      if (newdiff < diff) {
-        diff = newdiff;
-        curr = arr[val];
-        index = val;
-      }
-    }
-    return index;
-  };
-
-  console.log(closestIndex(30, rangePositionsPerc));
-
   useEffect(() => {
-    if (range && containerWidth) {
-      let _range = [] as number[];
-      const stepsPerc = 100 / (range.length - 1);
-      range.forEach((__, index) => {
-        if (index === 0) {
-          _range.push(0);
-        } else {
-          _range.push(_range[_range.length - 1] + stepsPerc);
-        }
-      });
-      setRangePositionPerc(_range);
-    }
-  }, [containerRef, range, containerWidth]);
+    setRangePositionPerc(
+      range && containerWidth ? convertRangeToRangePerc(range) : []
+    );
+  }, [range, containerWidth]);
 
   useLayoutEffect(() => {
     setContainerWidth(containerRef.current.offsetWidth);
@@ -74,28 +51,21 @@ export const Range = ({
     position = Math.min(position, containerWidth);
     return parseInt(position.toFixed(0));
   };
-  const calculateValueDot1 = (percent: number) => {
+  const calculateValueDotLeft = (percent: number) => {
     if (range) {
-      return range[closestIndex(percent, rangePositionsPerc)];
+      return range[closestIndexArray(percent, rangePositionsPerc)];
     } else {
       return (((max - min) * percent) / 100 + min).toFixed(0);
     }
   };
-  const calculateValueDot2 = (percent: number) => {
+  const calculateValueDotRight = (percent: number) => {
     if (range) {
-      return range[closestIndex(100 - percent, rangePositionsPerc)];
+      return range[closestIndexArray(100 - percent, rangePositionsPerc)];
     } else {
       return (((max - min) * (100 - percent)) / 100 + min).toFixed(0);
     }
   };
-  const convertPositionToPerc = (value: number) => {
-    const _value = (value * 100) / containerWidth;
-    return parseInt(_value.toFixed(0));
-  };
-  const convertPercToPosition = (value: number) => {
-    const _value = (value * containerWidth) / 100;
-    return parseInt(_value.toFixed(2));
-  };
+
   const positionToNotCross = () =>
     containerWidth - (rightPosition + leftPosition) > 0;
 
@@ -107,20 +77,12 @@ export const Range = ({
     const clientX = isMobile ? e.touches[0].clientX : e.clientX;
     if (activateDot1 && findPositionLeft(clientX) % 2) {
       const leftPosition = findPositionLeft(clientX);
-      if (range) {
-        if (!positionToNotCross()) {
-          setActivateDot1(false);
-          setLeftPosition(leftPosition - 1);
-        } else {
-          setLeftPosition(leftPosition);
-        }
+
+      if (!positionToNotCross()) {
+        setActivateDot1(false);
+        setLeftPosition(leftPosition - 1);
       } else {
-        if (!positionToNotCross()) {
-          setActivateDot1(false);
-          setLeftPosition(leftPosition - 1);
-        } else {
-          setLeftPosition(leftPosition);
-        }
+        setLeftPosition(leftPosition);
       }
     } else if (activateDot2 && findPositionRight(clientX) % 2) {
       const rightPosition = findPositionRight(clientX);
@@ -138,14 +100,24 @@ export const Range = ({
     setActivateDot1(false);
     setActivateDot2(false);
     if (range) {
-      const positionPercLeft = convertPositionToPerc(leftPosition);
-      const positionPercRight = convertPositionToPerc(rightPosition);
+      const positionPercLeft = convertPositionToPerc(
+        leftPosition,
+        containerWidth
+      );
+      const positionPercRight = convertPositionToPerc(
+        rightPosition,
+        containerWidth
+      );
       const newPositionLeft =
-        rangePositionsPerc[closestIndex(positionPercLeft, rangePositionsPerc)];
+        rangePositionsPerc[
+          closestIndexArray(positionPercLeft, rangePositionsPerc)
+        ];
       const newPositionRight =
-        rangePositionsPerc[closestIndex(positionPercRight, rangePositionsPerc)];
-      setLeftPosition(convertPercToPosition(newPositionLeft));
-      setRightPosition(convertPercToPosition(newPositionRight));
+        rangePositionsPerc[
+          closestIndexArray(positionPercRight, rangePositionsPerc)
+        ];
+      setLeftPosition(convertPercToPosition(newPositionLeft, containerWidth));
+      setRightPosition(convertPercToPosition(newPositionRight, containerWidth));
     }
   };
   return (
@@ -178,20 +150,23 @@ export const Range = ({
         <div
           className="dot"
           style={{
-            left: `${convertPositionToPerc(leftPosition) - compensationWidth}%`,
+            left: `${convertPositionToPerc(leftPosition, containerWidth) -
+              compensationWidth}%`,
           }}
           ref={dotLeft}
           onMouseDown={(__) => onMouseDown('dot1')}
           onTouchStart={(__) => onMouseDown('dot1')}
         >
           <div className="info-dot">
-            {calculateValueDot1(convertPositionToPerc(leftPosition))}
+            {calculateValueDotLeft(
+              convertPositionToPerc(leftPosition, containerWidth)
+            )}
           </div>
         </div>
         <div
           className="dot primary-background"
           style={{
-            right: `${convertPositionToPerc(rightPosition) -
+            right: `${convertPositionToPerc(rightPosition, containerWidth) -
               compensationWidth}%`,
           }}
           ref={dotRight}
@@ -199,7 +174,9 @@ export const Range = ({
           onTouchStart={(__) => onMouseDown('dot2')}
         >
           <div className="info-dot">
-            {calculateValueDot2(convertPositionToPerc(rightPosition))}
+            {calculateValueDotRight(
+              convertPositionToPerc(rightPosition, containerWidth)
+            )}
           </div>
         </div>
       </div>

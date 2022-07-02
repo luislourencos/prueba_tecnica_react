@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"npx webpack-dev-server\" \"npm run start-server\" ",
-    "test": "jest",
-    "start-server": "node server/index.js"
+    "start": "concurrently \"npx webpack-dev-server\" \"node server/index.js\" ",
+    "test": "jest"
   },
-  "proxy": "http://localhost:3001",
   "author": "sergio luis",
   "license": "MIT",
   "dependencies": {

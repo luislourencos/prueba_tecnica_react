@@ -22,7 +22,7 @@ export const Exercice2 = () => {
       setLoading(false);
     }
   }, []);
-  console.log(rangeValues);
+
   return (
     <div>
       <h1>Exercice2</h1>

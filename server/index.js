@@ -26,4 +26,4 @@ app.listen(PORT, () => {
     * Server connected, listening on ${API_URL}:${PORT} *
     ********************************************************
     `);
-});
+})
