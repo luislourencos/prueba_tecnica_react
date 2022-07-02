@@ -11,7 +11,7 @@ export const Exercice2 = () => {
   useEffect(() => {
     try {
       (async () => {
-        const data = getRangeArray();
+        const data = await getRangeArray();
         setMinValue(data.rangeValues[0]);
         setMaxValue(data.rangeValues[data.rangeValues.length - 1]);
         setRangeValues(data.rangeValues);

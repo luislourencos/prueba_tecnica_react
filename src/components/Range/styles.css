@@ -52,3 +52,17 @@
     position: relative;
     top: 2rem;
 }
+
+.range-container {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    z-index: -9999;
+}
+
+.range-item {
+    height: 30px;
+    border-left: 2px solid black;
+    position: relative;
+    bottom: 10px,
+}

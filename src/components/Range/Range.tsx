@@ -1,19 +1,7 @@
-import React, {
-  useState,
-  useRef,
-  useLayoutEffect,
-  useEffect,
-  ChangeEvent,
-} from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { Input } from '../Input';
 import './styles.css';
-interface IRange {
-  min: number;
-  max: number;
-  onChangeMinValue?: (number: number) => void;
-  onChangeMaxValue?: (number: number) => void;
-  range?: number[];
-}
+
 export const Range = ({
   min = 1,
   max = 100,
@@ -21,8 +9,6 @@ export const Range = ({
   onChangeMaxValue,
   range,
 }: IRange) => {
-  // The current position of mouse
-
   const dotLeft = useRef<HTMLDivElement>(null);
   const dotRight = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,41 +20,34 @@ export const Range = ({
   const [activateDot1, setActivateDot1] = useState(false);
   const [activateDot2, setActivateDot2] = useState(false);
   const compensationWidth = ((dotWidth / 2) * 100) / containerWidth;
+  const [rangePositions, setRangePosition] = useState([] as number[]); // range position
+
+  useEffect(() => {
+    if (range && containerWidth) {
+      const separationWidth = containerWidth / range?.length - 1;
+      let _range = [] as number[];
+
+      range.forEach((element, index) => {
+        if (index === 0) {
+          _range.push(0);
+        } else {
+          _range.push(_range[_range.length - 1] + separationWidth);
+        }
+      });
+
+      setRangePosition(_range);
+    }
+  }, [containerRef, range, containerWidth]);
   useLayoutEffect(() => {
     setContainerWidth(containerRef.current.offsetWidth);
     setContainerWidthLeft(containerRef.current.offsetLeft);
-
-    console.log('CONTAINER', {
-      width: containerRef.current.clientWidth,
-      left: containerRef.current.offsetLeft,
-    });
-    console.log('Left', {
-      width: dotLeft.current.clientWidth,
-      left: dotLeft.current.offsetLeft,
-    });
-    console.log('Right', {
-      width: dotRight.current.offsetWidth,
-      left: dotRight.current.offsetLeft,
-    });
-
-    console.log({
-      leftWidth: dotLeft.current.offsetWidth,
-      rightWidth: dotRight.current.offsetWidth,
-    });
     setDotWidth(dotLeft.current.offsetWidth);
-  }, [containerRef, dotRight, dotLeft]);
+  }, []);
 
   const findPositionRight = (value: number) => {
-    console.log({
-      containerWidth,
-      containerWidthLeft,
-      right: dotLeft.current.offsetLeft,
-      value,
-      sameValueContainer: value - containerWidthLeft + dotWidth,
-      position: containerWidth - value - dotWidth + containerWidthLeft,
-    });
     let position = containerWidth - value + containerWidthLeft;
-
+    position = Math.max(position, 0);
+    position = Math.min(position, containerWidth);
     return parseInt(
       positionToNotCross()
         ? position.toFixed(0)
@@ -77,6 +56,11 @@ export const Range = ({
   };
   const findPositionLeft = (value: number) => {
     let position = value - containerWidthLeft;
+    console.log(containerWidthLeft);
+    console.log(position);
+    position = Math.max(position, 0);
+    position = Math.min(position, containerWidth);
+    console.log({ position });
     return parseInt(
       positionToNotCross()
         ? position.toFixed(0)
@@ -118,30 +102,16 @@ export const Range = ({
       onMouseLeave={() => onMouseUp()}
     >
       <div
+        className="range-container"
         style={{
           left: containerWidthLeft,
           width: containerWidth + containerWidthLeft - dotWidth * 2,
-          position: 'absolute',
-          display: 'flex',
-          justifyContent: 'space-between',
-          zIndex: -9999,
         }}
       >
         {range &&
-          range.map(() => {
-            return (
-              <div
-                style={{
-                  height: '30px',
-
-                  borderLeft: '2px solid black',
-                  backgroundColor: 'pink',
-                  position: 'relative',
-                  bottom: 10,
-                }}
-              />
-            );
-          })}
+          range.map((element: number, index: number) => (
+            <div key={index} className="range-item" />
+          ))}
       </div>
       {range ? (
         <p>{min}</p>

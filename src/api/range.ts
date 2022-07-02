@@ -1,8 +1,10 @@
-import {  URL } from '../config/constants';
+import { API_URL } from '../config/config';
 
 export const getRangeMinAndMax = async() =>{
-  return {min:20, max:150}
+  const resp = await fetch(`${API_URL}/getRangeMinAndMax`)
+  return await resp.json()
 }
-export const getRangeArray = () =>{
-  return {rangeValues:[1.99, 5.99, 10.99, 30.99, 50.99, 70.99]}
+export const getRangeArray = async() =>{
+  const resp = await fetch(`${API_URL}/getRangeArray`)
+  return await resp.json()
 }
