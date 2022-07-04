@@ -1,7 +1,12 @@
-import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useLayoutEffect,
+  useEffect,
+  ChangeEvent,
+} from 'react';
 import { Input } from '../Input';
 import './styles.css';
-import { isMobile } from 'react-device-detect';
 import { closestIndexArray } from './utils/closestIndexArray';
 import { convertRangeToRangePerc } from './utils/convertRangeToRangePerc';
 import { convertPositionToPerc } from './utils/convertPositionToPerc';
@@ -22,8 +27,8 @@ export const Range = ({
   const [dotWidth, setDotWidth] = useState(0);
   const [leftPosition, setLeftPosition] = useState(0);
   const [rightPosition, setRightPosition] = useState(0);
-  const [activateDot1, setActivateDot1] = useState(false);
-  const [activateDot2, setActivateDot2] = useState(false);
+  const [activateDotLeft, setActivateDotLeft] = useState(false);
+  const [activateDotRight, setActivateDotRight] = useState(false);
   const compensationWidth = ((dotWidth / 2) * 100) / containerWidth;
   const [rangePositionsPerc, setRangePositionPerc] = useState([] as number[]);
 
@@ -31,7 +36,7 @@ export const Range = ({
     setRangePositionPerc(
       range && containerWidth ? convertRangeToRangePerc(range) : []
     );
-  }, [range, containerWidth]);
+  }, [containerWidth, range]);
 
   useLayoutEffect(() => {
     setContainerWidth(containerRef.current.offsetWidth);
@@ -39,28 +44,33 @@ export const Range = ({
     setDotWidth(dotLeft.current.offsetWidth);
   }, []);
 
-  const findPositionRight = (value: number) => {
-    let position = containerWidth - value + containerWidthLeft;
+  const findPosition = (value: number) => {
+    let position = 0;
+    if (activateDotLeft) {
+      position = value - containerWidthLeft;
+    } else {
+      position = containerWidth - value + containerWidthLeft;
+    }
     position = Math.max(position, 0);
     position = Math.min(position, containerWidth);
     return parseInt(position.toFixed(0));
   };
-  const findPositionLeft = (value: number) => {
-    let position = value - containerWidthLeft;
-    position = Math.max(position, 0);
-    position = Math.min(position, containerWidth);
-    return parseInt(position.toFixed(0));
-  };
+
   const calculateValueDotLeft = (percent: number) => {
     if (range) {
-      return range[closestIndexArray(percent, rangePositionsPerc)];
+      const value = range[closestIndexArray(percent, rangePositionsPerc)];
+      setTimeout(() => onChangeMinValue(value));
+
+      return value;
     } else {
       return (((max - min) * percent) / 100 + min).toFixed(0);
     }
   };
   const calculateValueDotRight = (percent: number) => {
     if (range) {
-      return range[closestIndexArray(100 - percent, rangePositionsPerc)];
+      const value = range[closestIndexArray(100 - percent, rangePositionsPerc)];
+      setTimeout(() => onChangeMaxValue(value));
+      return value;
     } else {
       return (((max - min) * (100 - percent)) / 100 + min).toFixed(0);
     }
@@ -69,26 +79,27 @@ export const Range = ({
   const positionToNotCross = () =>
     containerWidth - (rightPosition + leftPosition) > 0;
 
+  // Mouse Events
   const onMouseDown = (type: string) => {
-    type == 'dot1' ? setActivateDot1(true) : setActivateDot2(true);
+    type == 'dotLeft' ? setActivateDotLeft(true) : setActivateDotRight(true);
   };
 
-  const onMouseMouve = (e: any) => {
-    const clientX = isMobile ? e.touches[0].clientX : e.clientX;
-    if (activateDot1 && findPositionLeft(clientX) % 2) {
-      const leftPosition = findPositionLeft(clientX);
+  const onMouseMouve = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const clientX = e.clientX;
+    if (activateDotLeft && findPosition(clientX) % 2) {
+      const leftPosition = findPosition(clientX);
 
       if (!positionToNotCross()) {
-        setActivateDot1(false);
+        setActivateDotLeft(false);
         setLeftPosition(leftPosition - 1);
       } else {
         setLeftPosition(leftPosition);
       }
-    } else if (activateDot2 && findPositionRight(clientX) % 2) {
-      const rightPosition = findPositionRight(clientX);
+    } else if (activateDotRight && findPosition(clientX) % 2) {
+      const rightPosition = findPosition(clientX);
       setRightPosition(rightPosition);
       if (!positionToNotCross()) {
-        setActivateDot2(false);
+        setActivateDotRight(false);
         setRightPosition(rightPosition - 1);
       } else {
         setLeftPosition(leftPosition);
@@ -97,8 +108,12 @@ export const Range = ({
   };
 
   const onMouseUp = () => {
-    setActivateDot1(false);
-    setActivateDot2(false);
+    setActivateDotLeft(false);
+    setActivateDotRight(false);
+    dragDotWhenHaveRange();
+  };
+
+  const dragDotWhenHaveRange = () => {
     if (range) {
       const positionPercLeft = convertPositionToPerc(
         leftPosition,
@@ -108,14 +123,33 @@ export const Range = ({
         rightPosition,
         containerWidth
       );
-      const newPositionLeft =
+
+      let newPositionLeft =
         rangePositionsPerc[
           closestIndexArray(positionPercLeft, rangePositionsPerc)
         ];
-      const newPositionRight =
+      let newPositionRight =
         rangePositionsPerc[
           closestIndexArray(positionPercRight, rangePositionsPerc)
         ];
+
+      const positionCross = 100 - (newPositionLeft + newPositionRight);
+      const stepsPerc = 100 / (range?.length - 1);
+      // Condition to not cross bullets
+      if (positionCross < stepsPerc) {
+        if (newPositionLeft > newPositionRight) {
+          newPositionLeft =
+            rangePositionsPerc[
+              closestIndexArray(positionPercLeft, rangePositionsPerc) - 1
+            ];
+        } else {
+          newPositionRight =
+            rangePositionsPerc[
+              closestIndexArray(positionPercRight, rangePositionsPerc) - 1
+            ];
+        }
+      }
+
       setLeftPosition(convertPercToPosition(newPositionLeft, containerWidth));
       setRightPosition(convertPercToPosition(newPositionRight, containerWidth));
     }
@@ -125,27 +159,20 @@ export const Range = ({
       className="range"
       onMouseUp={() => onMouseUp()}
       onMouseLeave={() => onMouseUp()}
-      onTouchEnd={() => onMouseUp()}
+      data-testid="range"
     >
-      {range ? (
-        <p className="input">{min}</p>
-      ) : (
-        <input
-          type="number"
-          value={min}
-          className="input"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = parseInt(e.target.value) as number;
-            onChangeMinValue(value);
-          }}
-        />
-      )}
+      <Input
+        value={min}
+        disable={range?.length > 0}
+        onChange={onChangeMinValue}
+      />
 
       <div
         className="container"
         ref={containerRef}
-        onMouseMove={(e: any) => onMouseMouve(e)}
-        onTouchMove={(e: any) => onMouseMouve(e)}
+        onMouseMove={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
+          onMouseMouve(e)
+        }
       >
         <div
           className="dot"
@@ -154,13 +181,14 @@ export const Range = ({
               compensationWidth}%`,
           }}
           ref={dotLeft}
-          onMouseDown={(__) => onMouseDown('dot1')}
-          onTouchStart={(__) => onMouseDown('dot1')}
+          onMouseDown={(__) => onMouseDown('dotLeft')}
+          data-testid="dot-left"
         >
-          <div className="info-dot">
+          <div className="info-dot" data-testid="dot-left-value">
             {calculateValueDotLeft(
               convertPositionToPerc(leftPosition, containerWidth)
             )}
+            €
           </div>
         </div>
         <div
@@ -170,29 +198,22 @@ export const Range = ({
               compensationWidth}%`,
           }}
           ref={dotRight}
-          onMouseDown={(__) => onMouseDown('dot2')}
-          onTouchStart={(__) => onMouseDown('dot2')}
+          onMouseDown={(__) => onMouseDown('dotRight')}
+          data-testid="dot-right"
         >
-          <div className="info-dot">
+          <div className={'info-dot'} data-testid="dot-right-value">
             {calculateValueDotRight(
               convertPositionToPerc(rightPosition, containerWidth)
             )}
+            €
           </div>
         </div>
       </div>
-      {range ? (
-        <p className="input">{max}</p>
-      ) : (
-        <input
-          type="number"
-          value={max}
-          className="input"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = parseInt(e.target.value) as number;
-            onChangeMaxValue(value);
-          }}
-        />
-      )}
+      <Input
+        value={max}
+        disable={range?.length > 0}
+        onChange={onChangeMaxValue}
+      />
     </div>
   );
 };

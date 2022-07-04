@@ -9,7 +9,7 @@ export const Landing = () => {
   const handlerExercice2 = () => navigate('/exercice2');
 
   return (
-    <div className={'landing'}>
+    <div className={'landing'} data-testid="landing">
       <ExerciceBox title={'Exercice 1'} onClick={handlerExercice1} />
       <ExerciceBox title={'Exercice 2'} onClick={handlerExercice2} />
     </div>

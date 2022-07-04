@@ -1,1 +1,36 @@
-.input-container {}
+.input-container {
+    display: flex;
+    position: relative;
+    bottom: 10px;
+    margin: 0px 50px;
+    justify-content: center;
+    align-items: center;
+}
+
+.input {
+    width: 60px;
+    text-align: center;
+    border: 0px;
+    border-bottom: 2px solid #66757F;
+    font-size: 1.5rem;
+    margin: 0
+}
+
+.input:focus {
+    outline: none !important;
+}
+
+.input-label {
+    cursor: default;
+    width: 60px;
+    text-align: center;
+    border: 0px;
+    border-bottom: 2px solid #66757F;
+    font-size: 1.5rem;
+    margin: 0px;
+}
+
+.euro {
+    font-size: 1.5rem;
+    margin: 5px;
+}

@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 export const Header = ({ title, backButton = false }: IHeader) => {
   const navigate = useNavigate();
   return (
-    <header className={'header main-background'}>
+    <header className={'header main-background'} data-testid="header">
       {backButton && (
         <img
+          data-testid="button-back"
           className="header-back-button"
           src={leftArrow}
           onClick={() => navigate(-1)}

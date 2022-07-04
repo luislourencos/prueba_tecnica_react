@@ -1,70 +1,68 @@
 .range {
-  display: flex;
-  padding: 20px;
-  align-items: 'center';
+    display: flex;
+    align-items: 'center';
+    margin: 10rem 0rem;
 }
 
 .container {
-  width: 100%;
-  height: 0.5rem;
-  border-radius: 0.2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #e6e6e6;
+    width: 100%;
+    height: 0.5rem;
+    border-radius: 0.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #e6e6e6;
 }
 
 .dot {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background-color: red;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: red;
 
-  position: relative;
-  cursor: grab;
-  transition-duration: 200ms;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    position: relative;
+    cursor: grab;
+    transition-duration: 200ms;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.input {
-  width: 50px;
-  margin: 0px 20px;
-}
+
 
 .container:active {
-  cursor: grabbing;
-  cursor: -moz-grabbing;
-  cursor: -webkit-grabbing;
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
 }
 
 .dot:active {
-  transform: scale(1.2);
-  cursor: grabbing;
-  cursor: -moz-grabbing;
-  cursor: -webkit-grabbing;
+    transform: scale(1.2);
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
 }
 
 .dot:hover {
-  transform: scale(1.2);
+    transform: scale(1.2);
 }
 
 .info-dot {
-  position: relative;
-  top: 2rem;
+    position: relative;
+    top: 2rem;
+
 }
 
 .range-container {
-  position: absolute;
-  display: flex;
-  justify-content: space-between;
-  z-index: -9999;
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    z-index: -9999;
 }
 
 .range-item {
-  height: 30px;
-  border-left: 2px solid black;
-  position: relative;
-  bottom: 10px;
+    height: 30px;
+    border-left: 2px solid black;
+    position: relative;
+    bottom: 10px;
 }

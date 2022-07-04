@@ -18,6 +18,7 @@
     ```
     npm run test
     ```
+- It will open cypress, click in "Component testing" and then select browser.
 
 ### Made By
 - Sérgio Luis  
