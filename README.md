@@ -12,9 +12,16 @@
     npm start
     ```
 - the project will run in http://localhost:8080/
+- and the api will run in http://localhost:3001/
     
-## For run the tests
-- In the terminal type
+## For run the tests (Cypress)
+- In the terminal type 
+    ```
+    npm start
+    ```
+
+- to run the server and after type
+
     ```
     npm run test
     ```
